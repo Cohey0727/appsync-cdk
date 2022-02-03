@@ -1,15 +1,15 @@
-const tableName = "items";
+const tableName = "todos";
 
-export default `
+export const definition = `
 type ${tableName} {
   id: ID!
   name: String
 }
 type Query {
-  getItem(id: ID!): ${tableName}
+  getTodo(id: ID!): ${tableName}
 }
 type Mutation {
-  addItem(name: String!): ${tableName}
+  addTodo(name: String!): ${tableName}
   deleteItem(id: ID!): ${tableName}
 }
 type Schema {
