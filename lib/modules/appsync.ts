@@ -1,7 +1,7 @@
 import { Stack } from "aws-cdk-lib";
 import * as appsync from "aws-cdk-lib/aws-appsync";
 import { createStackName } from "../modules";
-import schemas from "../../app/schemas";
+import * as fs from "fs";
 
 export function createGrapqlApi(scope: Stack) {
   const name = createStackName("GraphQLApi");
@@ -10,12 +10,14 @@ export function createGrapqlApi(scope: Stack) {
     name: name,
     tags: [{ key: "name", value: name }],
   });
+  const schema = fs.readFileSync("app/schema.gql", "utf8");
+
   const cfnGraphQLSchema = new appsync.CfnGraphQLSchema(
     scope,
     "CfnGraphQLSchema",
     {
       apiId: cfnGraphQLApi.attrApiId,
-      definition: schemas,
+      definition: schema,
     }
   );
   return cfnGraphQLApi;
