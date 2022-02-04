@@ -1,11 +1,11 @@
 import { Stack } from "aws-cdk-lib";
 import * as appsync from "aws-cdk-lib/aws-appsync";
-import { createStackName } from "../modules";
+import { createResourceName } from "../modules";
 import * as fs from "fs";
 
-export function createGrapqlApi(scope: Stack) {
-  const name = createStackName("GraphQLApi");
-  const cfnGraphQLApi = new appsync.CfnGraphQLApi(scope, "CfnGraphQLApi", {
+export function createGrapqlApi(stack: Stack) {
+  const name = createResourceName("GraphQLApi");
+  const cfnGraphQLApi = new appsync.CfnGraphQLApi(stack, "CfnGraphQLApi", {
     authenticationType: "API_KEY",
     name: name,
     tags: [{ key: "name", value: name }],
@@ -13,7 +13,7 @@ export function createGrapqlApi(scope: Stack) {
   const schema = fs.readFileSync("app/schema.graphql", "utf8");
 
   const cfnGraphQLSchema = new appsync.CfnGraphQLSchema(
-    scope,
+    stack,
     "CfnGraphQLSchema",
     {
       apiId: cfnGraphQLApi.attrApiId,

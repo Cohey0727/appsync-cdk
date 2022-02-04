@@ -1,7 +1,5 @@
 import env from "./env";
 
-function createStackName(name: string) {
+export function createResourceName(name: string) {
   return `${env.stackName}${name}-${env.stackStage}`;
 }
-
-export default createStackName;
