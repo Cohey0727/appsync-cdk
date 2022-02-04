@@ -4,8 +4,6 @@ import * as lambdaNode from "aws-cdk-lib/aws-lambda-nodejs";
 import { createResourceName } from "./common";
 import env from "./env";
 
-const NODE_LAMBDA_SRC_DIR = "app/resolvers";
-
 export type CreatLambdaProps = {
   functionName: string;
   filePath: string;
@@ -14,11 +12,10 @@ export type CreatLambdaProps = {
 
 export function createLambda(stack: Stack, props: CreatLambdaProps) {
   const { functionName, filePath, environment } = props;
-  const entry = `${NODE_LAMBDA_SRC_DIR}/${filePath}.ts`;
   const resorceFunctionName = createResourceName(functionName);
   const nodejsFunction = new lambdaNode.NodejsFunction(stack, functionName, {
     functionName: resorceFunctionName,
-    entry,
+    entry: filePath,
     runtime: lambda.Runtime.NODEJS_14_X,
     environment: {
       NAME: resorceFunctionName,
