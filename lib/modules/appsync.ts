@@ -10,7 +10,7 @@ export function createGrapqlApi(scope: Stack) {
     name: name,
     tags: [{ key: "name", value: name }],
   });
-  const schema = fs.readFileSync("app/schema.gql", "utf8");
+  const schema = fs.readFileSync("app/schema.graphql", "utf8");
 
   const cfnGraphQLSchema = new appsync.CfnGraphQLSchema(
     scope,
