@@ -1,3 +1,4 @@
+import { CreateLambdaResolverProps } from "./resolver";
 import { createResourceName } from ".";
 import { Stack } from "aws-cdk-lib";
 import { buildSchema } from "graphql";
@@ -31,7 +32,6 @@ export function createLambdaResolver(
       lambdaFunctionArn: lambdaFunction.functionArn,
     },
   });
-
   const resolver = new appsync.CfnResolver(stack, resolverName, {
     apiId: graphqlApi.attrApiId,
     typeName: gqlTypeName,
@@ -61,7 +61,9 @@ export function createLambdaAndResolversFromSchema(
 
   const schemaFields = {
     Query: Object.values(query?.getFields() || {}),
+    // Query: [],
     Mutation: Object.values(mutation?.getFields() || {}),
+    // Mutation: [],
     Subscription: Object.values(subscription?.getFields() || {}),
   };
 
@@ -87,8 +89,8 @@ const roleSingletonStore: { value: null | iam.Role } = {
 
 function createRole(stack: Stack) {
   if (roleSingletonStore.value) return roleSingletonStore.value;
-  const role = new iam.Role(stack, "AppsyncExecutionRole", {
-    roleName: createResourceName("AppsyncExecutionRole"),
+  const role = new iam.Role(stack, "AppSyncExecutionRole", {
+    roleName: createResourceName("AppSyncExecutionRole"),
     assumedBy: new iam.ServicePrincipal("appsync.amazonaws.com"),
     managedPolicies: [
       iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonDynamoDBFullAccess"),
