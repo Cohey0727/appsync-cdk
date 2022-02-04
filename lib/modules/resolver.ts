@@ -1,4 +1,3 @@
-import { CreateLambdaResolverProps } from "./resolver";
 import { createResourceName } from ".";
 import { Stack } from "aws-cdk-lib";
 import { buildSchema } from "graphql";
