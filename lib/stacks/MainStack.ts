@@ -3,9 +3,7 @@ import { Construct } from "constructs";
 
 import {
   createGrapqlApi,
-  createLambda,
   createLambdaAndResolversFromSchema,
-  createLambdaResolver,
 } from "../modules";
 
 const LAMBDA_RESOLVER_ROOT_DIR = "app/resolvers";

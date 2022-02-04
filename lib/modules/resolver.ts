@@ -1,6 +1,8 @@
+import { createResourceName } from ".";
 import { Stack } from "aws-cdk-lib";
 import { buildSchema } from "graphql";
 import * as fs from "fs";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as appsync from "aws-cdk-lib/aws-appsync";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { createLambda } from "./lambda";
@@ -19,10 +21,12 @@ export function createLambdaResolver(
   const { graphqlApi, lambdaFunction, gqlTypeName, gqlFieldName } = props;
   const dataSourceName = `${gqlTypeName}${gqlFieldName}LambdaDatasource`;
   const resolverName = `${gqlTypeName}${gqlFieldName}Resolver`;
+  const role = createRole(stack);
   const dataSource = new appsync.CfnDataSource(stack, dataSourceName, {
     name: dataSourceName,
     apiId: graphqlApi.attrApiId,
     type: "AWS_LAMBDA",
+    serviceRoleArn: role.roleArn,
     lambdaConfig: {
       lambdaFunctionArn: lambdaFunction.functionArn,
     },
@@ -75,4 +79,27 @@ export function createLambdaAndResolversFromSchema(
       });
     });
   });
+}
+
+const roleSingletonStore: { value: null | iam.Role } = {
+  value: null,
+};
+
+function createRole(stack: Stack) {
+  if (roleSingletonStore.value) return roleSingletonStore.value;
+  const role = new iam.Role(stack, "AppsyncExecutionRole", {
+    roleName: createResourceName("AppsyncExecutionRole"),
+    assumedBy: new iam.ServicePrincipal("appsync.amazonaws.com"),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonDynamoDBFullAccess"),
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AWSLambda_FullAccess"),
+    ],
+  });
+
+  const esPolicy = new iam.PolicyStatement();
+  esPolicy.addAllResources();
+  esPolicy.addActions("es:ESHttpPost", "es:ESHttpPut", "es:ESHttpDelete");
+  role.addToPolicy(esPolicy);
+  roleSingletonStore.value = role;
+  return role;
 }
